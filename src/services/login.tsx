@@ -1,11 +1,27 @@
-import { api } from "../api"
+import { api } from "../api";
 
-export const login = async (email: string): Promise<boolean> => {
-    const data: any = await api
+interface UserData {
+  email: string;
+  password: string;
+}
 
-    if(email !== data.email) {
-        return false
+export const login = async (email: string, password: string): Promise<boolean> => {
+  try {
+    const data = await api as UserData; // Casting explícito
+
+    // Verifique se os campos de email e senha existem no retorno da API
+    if (!data.email || !data.password) {
+      return false;
     }
 
-    return true
-}
+    // Comparação de email e senha
+    if (email !== data.email || password !== data.password) {
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Erro ao tentar fazer login:", error);
+    return false; // Retorna falso se houver qualquer erro
+  }
+};

@@ -8,7 +8,7 @@ interface ICardInfo {
 const CardInfo = ({ mainContent, content }: ICardInfo) => {
   return (
     <Box 
-        backgroundColor="white" 
+        backgroundColor="gray.300" 
         minHeight="120px" 
         padding={8}
         borderRadius="25px"

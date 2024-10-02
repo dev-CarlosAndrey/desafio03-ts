@@ -1,62 +1,85 @@
-import { Center, SimpleGrid, Spinner } from "@chakra-ui/react"
-import { useParams, useNavigate } from "react-router-dom"
-import { useContext, useEffect, useState } from "react"
-import { api } from "../api"
-import CardInfo from "../components/CardInfo"
-import { AppContext } from "../components/AppContext"
+import { Center, SimpleGrid, Spinner, Button } from "@chakra-ui/react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { api } from "../api";
+import CardInfo from "../components/CardInfo";
+import { AppContext } from "../components/AppContext";
 
 interface UserData {
-    email: string
-    password: string
-    name: string
-    balance: number
-    id: string
+  email: string;
+  password: string;
+  name: string;
+  balance: number;
+  id: string;
 }
 
 const Conta = () => {
-    const [ userData, setUserData ] = useState<null | UserData>()
-    const { id } = useParams()
-    const navigate = useNavigate()
+  const [userData, setUserData] = useState<null | UserData>(null); 
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-    const { isLoggedIn } = useContext(AppContext)
+  const { isLoggedIn } = useContext(AppContext);
 
-    !isLoggedIn && navigate('/')
-
-    useEffect(() => {
-        const getData = async () => {
-            const data: any | UserData = await api
-            setUserData(data)
-        }
-
-        getData()
-    }, [])
-
-    const actualData = new Date()
-
-    if(userData && id !== userData.id) {
-        navigate('/')
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate("/"); 
     }
-  
-    return (
-        <Center>
-            <SimpleGrid columns={2} spacing={8} paddingTop={16}>
-                {
-                    userData === undefined || userData === null ?
-                    (  
-                        <Center>
-                            <Spinner size='xl' color='white'/>
-                        </Center>
-                    ) : 
-                    (
-                        <>
-                            <CardInfo mainContent={`Bem vinda ${userData?.name}`} content={`${actualData.getDay()} / ${actualData.getMonth()} / ${actualData.getFullYear()} ${actualData.getHours()}:${actualData.getMinutes()}`} />
-                            <CardInfo mainContent='Saldo' content={`R$ ${userData.balance}`}/>
-                        </>
-                    )
-                }
-            </SimpleGrid>    
-        </Center>
-    )
-}
+  }, [isLoggedIn, navigate]); 
 
-export default Conta
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const data: any | UserData = await api;
+        setUserData(data);
+      } catch (error) {
+        console.error("Erro ao buscar os dados:", error);
+        navigate("/"); 
+      }
+    };
+
+    getData();
+  }, [navigate]);
+
+  const actualData = new Date();
+
+  if (userData && id !== userData.id) {
+    navigate("/");
+  }
+
+  return (
+    <Center>
+      <SimpleGrid columns={2} spacing={8} paddingTop={16}>
+        {userData === null ? (
+          <Center>
+            <Spinner size="xl" color="white" />
+          </Center>
+        ) : (
+          <>
+            <CardInfo
+              mainContent={`Bem vindo(a) ${userData?.name}`}
+              content={`${actualData.getDate()} / ${
+                actualData.getMonth() + 1
+              } / ${actualData.getFullYear()} ${String(
+                actualData.getHours()
+              ).padStart(2, "0")}:${String(actualData.getMinutes()).padStart(
+                2,
+                "0"
+              )}`}
+            />
+            <CardInfo
+              mainContent="Saldo"
+              content={`R$ ${userData.balance.toFixed(2)}`}
+            />
+            <Center>
+            <Link to="infoconta">
+              <Button>Informações da Conta</Button>
+            </Link>
+            </Center>
+          </>
+        )}
+      </SimpleGrid>
+    </Center>
+  );
+};
+
+export default Conta;

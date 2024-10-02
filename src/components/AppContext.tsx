@@ -3,6 +3,7 @@ import { getAllLocalStorage } from "../services/storage"
 
 interface IAppContext {
     user: string,
+    password: string,
     isLoggedIn: boolean,
     setIsLoggedIn: (isLoggedIn: boolean) => void
 }
@@ -22,9 +23,10 @@ export const AppContextProvider = ({ children }: any) => {
     }, [])
 
     const user = 'nathally'
+    const password = '123456'
   
     return (
-      <AppContext.Provider value={{ user, isLoggedIn, setIsLoggedIn }}>
+      <AppContext.Provider value={{ user, isLoggedIn, setIsLoggedIn, password}}>
         { children }
       </AppContext.Provider>
     )
